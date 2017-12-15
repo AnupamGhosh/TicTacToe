@@ -5,7 +5,7 @@
 	var CIRCL = 0;
 	var XELEM = '<div class="cross"><div class="lt"></div><div class="rt"></div></div>';
 	var OELEM = '<div class="circle"></div>';
-// 	var tttWorker = new Worker('worker.js');
+	var tttWorker = new Worker('worker.js');
 
 	var move = CIRCL;
 	var nineSq = document.getElementById("nine-box");
@@ -35,12 +35,23 @@
 			if (!box.classList.contains('box-disabled')) {
 				box.classList.add('box-disabled');
 				box.classList.remove('hovered');
-				console.log(parseInt(i / ROWS));
-				console.log(parseInt(i % COLS));
+
+				var row = parseInt(i / ROWS);
+				var col = parseInt(i % COLS);
+				console.log(row);
+				console.log(col);
+				tttWorker.postMessage({r: row, c: col});
 				move = !move;
 			}
 		});
 	});
+
+	tttWorker.onmessage = function(result) {
+		var moveElem = move == CROSS ? XELEM : OELEM;
+		var outputBox = boxes[result.data.r * ROWS + result.data.c];
+		outputBox.classList.add('box-disabled');
+		outputBox.insertAdjacentHTML('afterbegin', moveElem);
+	};
 
 	sInput.addEventListener("click", function() {
 		this.classList.toggle('is-transitioned');
