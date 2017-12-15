@@ -67,6 +67,13 @@ body {
 	background-color: gainsboro;
 }
 
+.disabled {
+	cursor: not-allowed;
+}
+.disabled > .box {
+	pointer-events: none;
+	background: #f8f8f8;
+}
 
 .start-info {
 	display: flex;

@@ -9,7 +9,7 @@
 
 	var move = CIRCL;
 	var nineSq = document.getElementById("nine-box");
-	var sInput = document.getElementsByClassName("switch")[0];
+	var sInput = document.querySelector(".switch");
 	var boxes = document.querySelectorAll('#nine-box > .box');
 
 
@@ -41,6 +41,7 @@
 				console.log(row);
 				console.log(col);
 				tttWorker.postMessage({r: row, c: col});
+				nineSq.classList.add('disabled');
 				move = !move;
 			}
 		});
@@ -51,6 +52,7 @@
 		var outputBox = boxes[result.data.r * ROWS + result.data.c];
 		outputBox.classList.add('box-disabled');
 		outputBox.insertAdjacentHTML('afterbegin', moveElem);
+		nineSq.classList.remove('disabled');
 	};
 
 	sInput.addEventListener("click", function() {
