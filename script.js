@@ -74,7 +74,7 @@
 		case 'moveComputer':
 			ttt = result.ttt;
 			var moveElem = move == CROSS ? XELEM : OELEM;
-			var outputBox = boxes[result.r * ROWS + result.c];
+			var outputBox = boxes[result.rc];
 			outputBox.classList.add('box-disabled');
 			outputBox.insertAdjacentHTML('afterbegin', moveElem);
 			nineSq.classList.remove('disabled');

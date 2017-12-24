@@ -21,14 +21,14 @@ function TicTacToe() {
 	}(this.ROWS, this.COLS);
 }
 function minimax(state, xToPlay, height) {
-	if (height == 0) return [0, 0, 0, -1];
+	if (height == 0) return [0, 0, 0, [-1]];
 	if (this.scoreMemo[state]) return this.scoreMemo[state];
 
 	// var nodeVal = nodeValue(xToPlay, height, state);
 	var nodeVal = nodeValue.call(this, xToPlay, height, state);
 	if (nodeVal) return nodeVal;
 
-	var nextMove = -1;
+	var nextMove = [];
 	var wins = 0, loss = 0;
 	var winScore = 0, losScore = 0;
 	var maxScore = xToPlay ? -99 : 99;
@@ -46,14 +46,19 @@ function minimax(state, xToPlay, height) {
 			var betterMax = xToPlay ? maxScore < newScoreArray[0] : maxScore > newScoreArray[0];
 			var betterMin = xToPlay ? minScore > newScoreArray[0] : minScore < newScoreArray[0];
 
-			if (betterMax || maxScore == newScoreArray[0] && winScore < winsFound) {
-				nextMove = i * this.COLS + j;
+				// nextMove = [i * this.COLS + j];
+			if (betterMax) {
+				nextMove = [i * this.COLS + j];
 				maxScore = newScoreArray[0];
+				winScore = winsFound;
+				wins = winsFound;
+			} else if (maxScore == newScoreArray[0] && winScore < winsFound) {
+				nextMove.push(i * this.COLS + j);
 				winScore = winsFound;
 				wins = winsFound;
 			} else if (maxScore == newScoreArray[0] && winScore == winsFound) {
 				wins += winsFound;
-				nextMove = i * this.COLS + j;
+				nextMove.push(i * this.COLS + j);
 			}
 
 			if (betterMin || minScore == newScoreArray[0] && losScore < lossFound) {
@@ -96,8 +101,8 @@ function nodeValue(xToPlay, height, state) {
 			move = m;
 		}
 		if (opCount == 0 && myCount == this.COLS - 1) { // I won
-			return xToPlay ? [ height, this.MXPT, -this.MXPT, m ]
-					: [ -height, -this.MXPT, this.MXPT, m ];
+			return xToPlay ? [ height, this.MXPT, -this.MXPT, [m] ]
+					: [ -height, -this.MXPT, this.MXPT, [m] ];
 		}
 		myCount = 0;
 		opCount = 0;
@@ -118,8 +123,8 @@ function nodeValue(xToPlay, height, state) {
 			move = m;
 		}
 		if (opCount == 0 && myCount == this.ROWS - 1) { // I won
-			return xToPlay ? [ height, this.MXPT, -this.MXPT, m ]
-					: [ -height, -this.MXPT, this.MXPT, m ];
+			return xToPlay ? [ height, this.MXPT, -this.MXPT, [m] ]
+					: [ -height, -this.MXPT, this.MXPT, [m] ];
 		}
 		myCount = 0;
 		opCount = 0;
@@ -141,16 +146,16 @@ function nodeValue(xToPlay, height, state) {
 			move = m;
 		}
 		if (opCount == 0 && myCount == this.ROWS - 1) { // I won
-			return xToPlay ? [ height, this.MXPT, -this.MXPT, m ]
-					: [ -height, -this.MXPT, this.MXPT, m ];
+			return xToPlay ? [ height, this.MXPT, -this.MXPT, [m] ]
+					: [ -height, -this.MXPT, this.MXPT, [m] ];
 		}
 		myCount = 0;
 		opCount = 0;
 	}
 
 	if (forked > 1) { // I am screwed
-		return xToPlay ? [ -height, 0, this.MXPT, m ]
-				: [ height, this.MXPT, 0, m ];
+		return xToPlay ? [ -height, 0, this.MXPT, [m] ]
+				: [ height, this.MXPT, 0, [m] ];
 	} else if (forked == 1) { // only move
 		var r = parseInt(move / this.ROWS);
 		var c = move % this.COLS;
@@ -159,7 +164,7 @@ function nodeValue(xToPlay, height, state) {
 		var newScore = minimax.call(this, newState, !xToPlay, height - 1);
 		this.scoreMemo[newState] = newScore;
 		this.board[r][c] = this.EMPTY;
-		return [ newScore[0], newScore[1], newScore[2], move ];
+		return [ newScore[0], newScore[1], newScore[2], [move] ];
 	} else { // move a usual
 		return null;
 	}
@@ -203,11 +208,12 @@ onmessage = function(msg) {
 		case 'moveComputer':
 			var state = getState.call(input.ttt);
 			var scoreArray = minimax.call(input.ttt, state, input.ttt.currentHt % 2, input.ttt.currentHt);
-			saveMove.call(input.ttt, parseInt(scoreArray[3] / input.ttt.COLS), scoreArray[3] % input.ttt.ROWS);
+			var ri = parseInt(Math.random() * scoreArray[3].length)
+			saveMove.call(input.ttt, parseInt(scoreArray[3][ri] / input.ttt.COLS), scoreArray[3][ri] % input.ttt.ROWS);
+			// debugger;
 			postMessage({
 				task: input.task,
-				c: scoreArray[3] % input.ttt.ROWS,
-				r: parseInt(scoreArray[3] / input.ttt.COLS),
+				rc: scoreArray[3][ri],
 				ttt: input.ttt
 			});
 	}
