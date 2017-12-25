@@ -79,7 +79,6 @@
 			if (!result.end) {
 				nineSq.classList.remove('disabled');
 			} else {
-				console.log(result.end.boxes);
 				result.end.boxes.forEach(function (box) {
 					boxes[box[0] * ROWS + box[1]].classList.add('win-color');
 				});
