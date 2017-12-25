@@ -1,4 +1,5 @@
 (function() {
+	'use strict';
 	var ROWS = 3;
 	var COLS = 3;
 	var CROSS = 1;
@@ -8,9 +9,7 @@
 	var comFirst = true;
 
 	var tttWorker = new Worker('TicTacToe.js');
-	tttWorker.postMessage({
-		task: 'init'
-	});
+	tttWorker.postMessage({ task: 'init'});
 	var ttt = null;
 
 	var move = CROSS;
@@ -44,8 +43,6 @@
 
 				var row = parseInt(i / ROWS);
 				var col = parseInt(i % COLS);
-				console.log(row);
-				console.log(col);
 				tttWorker.postMessage({
 					task: 'movePlayer',
 					ttt: ttt,
@@ -68,17 +65,25 @@
 					task: 'moveComputer',
 					ttt: ttt
 				});
+				nineSq.classList.add('disabled');
 			}
 			break;
 
 		case 'moveComputer':
-			ttt = result.ttt;
 			var moveElem = move == CROSS ? XELEM : OELEM;
+			ttt = result.ttt;
 			var outputBox = boxes[result.rc];
 			outputBox.classList.add('box-disabled');
 			outputBox.insertAdjacentHTML('afterbegin', moveElem);
-			nineSq.classList.remove('disabled');
 			move = !move;
+			if (!result.end) {
+				nineSq.classList.remove('disabled');
+			} else {
+				console.log(result.end.boxes);
+				result.end.boxes.forEach(function (box) {
+					boxes[box[0] * ROWS + box[1]].classList.add('win-color');
+				});
+			}
 			break;
 
 		case 'movePlayer':
@@ -91,12 +96,18 @@
 	};
 
 	sInput.addEventListener("click", function() {
-		this.classList.toggle('is-transitioned');
+		// setTimeout(function (element) {
+			this.parentElement.classList.toggle('is-transitioned');
+		// }, 300, this.parentElement);
 		comFirst = !comFirst;
+		tttWorker.postMessage({ task: 'init'});
+		nineSq.classList.remove('disabled');
+		move = CROSS;
 		var nodes = nineSq.children;
 		for (var i = 0; i < nodes.length; i++) {
 			if (nodes[i].classList.contains("box") && nodes[i].firstElementChild) {
 				nodes[i].classList.remove("box-disabled");
+				nodes[i].classList.remove("win-color");
 				nodes[i].removeChild(nodes[i].firstElementChild);
 			}
 		}

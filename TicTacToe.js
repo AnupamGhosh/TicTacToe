@@ -7,7 +7,7 @@ function TicTacToe() {
 	this.LVPT = 10; // point per level
 	this.MXPT = Math.pow(this.LVPT, 5);
 	this.currentHt = this.ROWS * this.COLS;
-	this.movePiece = this.CROSS;
+	this.currentPiece = this.CROSS;
 	this.scoreMemo = new Array(Math.pow(3, this.ROWS * this.COLS));
 	this.board = function (rows, cols) {
 		var b = new Array(rows);
@@ -86,71 +86,31 @@ function nodeValue(xToPlay, height, state) {
 	var OPN = xToPlay ? this.CIRCL : this.CROSS;
 	var m = -1, move = -1, forked = 0;
 
-	for (var i = 0; i < this.ROWS; i++) { // row
-		for (var j = 0; j < this.COLS; j++) {
-			if (this.board[i][j] == OPN) {
-				opCount++;
-			} else if (this.board[i][j] == this.EMPTY) {
-				m = i * this.COLS + j;
-			} else {
-				myCount++;
+	for (var rcd = 0; rcd < 4; rcd++) { // row, col & diagonal
+		for (var i = 0; i < this.ROWS; i++) {
+			for (var j = 0; j < this.COLS; j++) {
+				var r = rcd == 0 ? i : j;
+				var c = rcd == 1 ? i : rcd == 3 ? this.ROWS - 1 - j : j;
+				if (this.board[r][c] == OPN) {
+					opCount++;
+				} else if (this.board[r][c] == this.EMPTY) {
+					m = r * this.COLS + c;
+				} else {
+					myCount++;
+				}
 			}
-		}
-		if (myCount == 0 && opCount == this.COLS - 1) {
-			forked++;
-			move = m;
-		}
-		if (opCount == 0 && myCount == this.COLS - 1) { // I won
-			return xToPlay ? [ height, this.MXPT, -this.MXPT, [m] ]
-					: [ -height, -this.MXPT, this.MXPT, [m] ];
-		}
-		myCount = 0;
-		opCount = 0;
-	}
-
-	for (var i = 0; i < this.ROWS; i++) { // column
-		for (var j = 0; j < this.COLS; j++) {
-			if (this.board[j][i] == OPN) {
-				opCount++;
-			} else if (this.board[j][i] == 0) {
-				m = j * this.COLS + i;
-			} else {
-				myCount++;
+			if (myCount == 0 && opCount == this.ROWS - 1) {
+				forked++;
+				move = m;
 			}
-		}
-		if (myCount == 0 && opCount == this.ROWS - 1) {
-			forked++;
-			move = m;
-		}
-		if (opCount == 0 && myCount == this.ROWS - 1) { // I won
-			return xToPlay ? [ height, this.MXPT, -this.MXPT, [m] ]
-					: [ -height, -this.MXPT, this.MXPT, [m] ];
-		}
-		myCount = 0;
-		opCount = 0;
-	}
-
-	for (var d = 0; d < 2; d++) {
-		for (var i = 0; i < this.ROWS; i++) { // left diagonal
-			var j = d == 0 ? i : this.ROWS - 1 - i;
-			if (this.board[i][j] == OPN) {
-				opCount++;
-			} else if (this.board[i][j] == this.EMPTY) {
-				m = i * this.COLS + j;
-			} else {
-				myCount++;
+			if (opCount == 0 && myCount == this.ROWS - 1) { // I won
+				return xToPlay ? [ height, this.MXPT, -this.MXPT, [m] ]
+						: [ -height, -this.MXPT, this.MXPT, [m] ];
 			}
+			myCount = 0;
+			opCount = 0;
+			if (rcd >= 2) break;
 		}
-		if (myCount == 0 && opCount == this.ROWS - 1) {
-			forked++;
-			move = m;
-		}
-		if (opCount == 0 && myCount == this.ROWS - 1) { // I won
-			return xToPlay ? [ height, this.MXPT, -this.MXPT, [m] ]
-					: [ -height, -this.MXPT, this.MXPT, [m] ];
-		}
-		myCount = 0;
-		opCount = 0;
 	}
 
 	if (forked > 1) { // I am screwed
@@ -170,20 +130,53 @@ function nodeValue(xToPlay, height, state) {
 	}
 };
 function saveMove(r, c) {
-	this.board[r][c] = this.movePiece;
-	this.movePiece = this.movePiece == this.CROSS ? this.CIRCL : this.CROSS;
+	this.board[r][c] = this.currentPiece;
+	this.currentPiece = this.currentPiece == this.CROSS ? this.CIRCL : this.CROSS;
 	this.currentHt--;
 };
-function getState() {
+function getState(board) {
 	var state = 0;
-	for (var i = 0; i < this.board.length; i++) {
-		for (var j = 0; j < this.board[i].length; j++) {
-			state += this.board[i][j] * Math.pow(3, i * this.COLS + j);
+	for (var i = 0; i < board.length; i++) {
+		for (var j = 0; j < board[i].length; j++) {
+			state += board[i][j] * Math.pow(3, i * board[i].length + j);
 		}
 	}
 	return state;
 };
+function whoWon() {
+	var boxX = [];
+	var boxO = [];
 
+	for (var rcd = 0; rcd < 4; rcd++) { // row, col & diagonal
+		for (var i = 0; i < this.ROWS; i++) {
+			for (var j = 0; j < this.COLS; j++) {
+				var r = rcd == 0 ? i : j;
+				var c = rcd == 1 ? i : rcd == 3 ? this.ROWS - 1 - j : j;
+				if (this.board[r][c] == this.CROSS) {
+					boxX.push([r, c]);
+					if (boxX.length == this.ROWS) {
+						return {
+							won: this.CROSS,
+							boxes: boxX
+						}
+					}
+				} else if (this.board[r][c] != this.EMPTY) {
+					boxO.push([r, c])
+					if (boxO.length == this.ROWS) {
+						return {
+							won: this.CIRCL,
+							boxes: boxO
+						}
+					}
+				}
+			}
+			boxX = [];
+			boxO = [];
+			if (rcd >= 2) break;
+		}
+	}
+	return null;
+}
 
 onmessage = function(msg) {
 	var input = msg.data;
@@ -201,20 +194,21 @@ onmessage = function(msg) {
 			saveMove.call(input.ttt, input.r, input.c);
 			postMessage({
 				task: input.task,
-				ttt: input.ttt
+				ttt: input.ttt,
+				end: whoWon.call(input.ttt)
 			});
 			break;
 
 		case 'moveComputer':
-			var state = getState.call(input.ttt);
+			var state = getState(input.ttt.board);
 			var scoreArray = minimax.call(input.ttt, state, input.ttt.currentHt % 2, input.ttt.currentHt);
 			var ri = parseInt(Math.random() * scoreArray[3].length)
 			saveMove.call(input.ttt, parseInt(scoreArray[3][ri] / input.ttt.COLS), scoreArray[3][ri] % input.ttt.ROWS);
-			// debugger;
 			postMessage({
 				task: input.task,
 				rc: scoreArray[3][ri],
-				ttt: input.ttt
+				ttt: input.ttt,
+				end: whoWon.call(input.ttt)
 			});
 	}
 }

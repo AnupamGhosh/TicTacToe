@@ -40,6 +40,7 @@ body {
 	pointer-events: none;
 	width: 100%;
 	position: relative;
+	background-color: black;
 }
 .box .cross > div {
 	position: absolute;
@@ -48,7 +49,7 @@ body {
 	left: 50%;
 	top: 50%;
 	border-radius: 5px;
-	background-color: black;
+	background-color: inherit;
 }
 .box .cross .lt {
 	transform: translateX(-50%) translateY(-50%) rotate(50deg);
@@ -66,18 +67,21 @@ body {
 .box.hovered .cross > div {
 	background-color: gainsboro;
 }
+.box.win-color > div {
+	animation: altb 3s forwards;
+}
 
 .disabled {
 	cursor: not-allowed;
 }
 .disabled > .box {
 	pointer-events: none;
-	background: #f8f8f8;
+	/*background: #f8f8f8;*/
 }
 
 .start-info {
 	display: flex;
-	height: 20px;
+	padding-top: 10%;
 	align-items: center;
 	justify-content: center;
 }
@@ -86,42 +90,73 @@ body {
 }
 .switch {
 	display: flex;
-	width: 40px;
+	width: 30px;
+	margin: 5px;
 	text-align: center;
 	border-radius: 100px;
 	background: #ef5350;
-	height: 20px;
+	height: 13px;
 	position: relative;
-	overflow: hidden;
 	transition: background ease-in-out 0.3s;
 	cursor: pointer;
 }
 .switch > div {
-	line-height: 20px;
 	color: white;
 	font-weight: 300;
 }
-.switch.is-transitioned {
+.is-transitioned .switch {
 	background: #009688;
 }
-.switch.is-transitioned .handle {
-	transform: translateX(20px);
+.is-transitioned .switch .handle {
+	transform: translateX(17px);
 }
 .switch .on {
 	width: 50%;
 }
+/*.switch .on i {
+	padding-left: 5px;
+}*/
 .switch .off {
 	width: 50%;
 }
 .switch .handle {
-	width: 18px;
-	height: 18px;
+	width: 17px;
+	height: 17px;
 	border-radius: 50%;
 	position: absolute;
 	background: white;
-	top: 1px;
-	left: 1px;
-	box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.4);
+	top: -2px;
+	left: -2px;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
 	transition: transform ease-in-out 0.3s;
 }
-  
+
+
+.start-info.is-transitioned .com {
+	animation: g2b 0.3s forwards;
+}
+.start-info.is-transitioned .user {
+	animation: r2g 0.3s forwards;
+}
+.start-info .com {
+	color: gainsboro;
+	/*animation: g2b 3s forwards;
+	animation-direction: reverse;*/
+}
+.start-info .user {
+	color: #ef5350;
+	/*animation: r2g 3s forwards;
+	animation-direction: reverse;*/
+}
+@keyframes r2g {
+    /*from {color: #ef5350;}*/
+    to {color: gainsboro;}
+}
+@keyframes g2b {
+    /*from {color: gainsboro;}*/
+    to {color: #009688;}
+}
+@keyframes altb {
+    /*from {color: gainsboro;}*/
+    to {background-color: #ef5350;}
+}
