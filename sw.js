@@ -1,4 +1,4 @@
-var CACHE_NAME = 'TicTacToe-v-1';
+var CACHE_NAME = 'TicTacToe-v-2';
 var urlsToCache = [
 	'./',
 	'style.css',

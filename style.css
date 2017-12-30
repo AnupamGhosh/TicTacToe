@@ -1,7 +1,9 @@
 body {
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: Helvetica, Arial, sans-serif;
 	display: grid;
 	justify-items: center;
+	min-height: 100vh;
+	margin: 0;
 }
 
 #nine-box {
@@ -67,10 +69,12 @@ body {
 .box.hovered .cross > div {
 	background-color: gainsboro;
 }
-.box.win-color > div {
-	animation: altb 3s forwards;
+.box.win-color > .cross {
+	animation: cltr 3s forwards;
 }
-
+.box.win-color > .circle {
+	animation: botr 3s forwards;
+}
 .disabled {
 	cursor: not-allowed;
 }
@@ -81,8 +85,6 @@ body {
 
 .start-info {
 	display: flex;
-	padding-top: 10%;
-	align-items: center;
 	justify-content: center;
 }
 .start-info .text {
@@ -156,7 +158,9 @@ body {
     /*from {color: gainsboro;}*/
     to {color: #009688;}
 }
-@keyframes altb {
-    /*from {color: gainsboro;}*/
+@keyframes cltr {
     to {background-color: #ef5350;}
+}
+@keyframes botr {
+    to {border-color: #ef5350;}
 }
