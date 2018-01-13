@@ -15,7 +15,7 @@
 	var move = CROSS;
 	var nineSq = document.getElementById("nine-box");
 	var sInput = document.querySelector(".switch");
-	var boxes = document.querySelectorAll('#nine-box > .box');
+	var boxes = querySelectorAll('#nine-box > .box');
 
 
 	boxes.forEach(function (box, i) {
@@ -70,6 +70,8 @@
 			break;
 
 		case 'moveComputer':
+			if (result.rc == -1) break;
+			
 			var moveElem = move == CROSS ? XELEM : OELEM;
 			ttt = result.ttt;
 			var outputBox = boxes[result.rc];
@@ -95,9 +97,7 @@
 	};
 
 	sInput.addEventListener("click", function() {
-		// setTimeout(function (element) {
-			this.parentElement.classList.toggle('is-transitioned');
-		// }, 300, this.parentElement);
+		this.parentElement.classList.toggle('is-transitioned');
 		comFirst = !comFirst;
 		tttWorker.postMessage({ task: 'init'});
 		nineSq.classList.remove('disabled');
@@ -111,4 +111,13 @@
 			}
 		}
 	});
+
+	function querySelectorAll(selector) {
+		var dNodes = document.querySelectorAll(selector);
+		var nodes = [];
+		for (var i = 0; i < dNodes.length; i++) {
+			nodes.push(dNodes[i]);
+		}
+		return nodes;
+	}
 })();

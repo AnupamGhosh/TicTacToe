@@ -2,8 +2,6 @@ body {
 	font-family: Helvetica, Arial, sans-serif;
 	display: grid;
 	justify-items: center;
-	min-height: 100vh;
-	margin: 0;
 }
 
 #nine-box {
@@ -84,6 +82,7 @@ body {
 }
 
 .start-info {
+	padding-top: 10vh;
 	display: flex;
 	justify-content: center;
 }
